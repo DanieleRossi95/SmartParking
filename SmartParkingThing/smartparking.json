@@ -1,0 +1,97 @@
+{
+    "title": "smartparking",
+    "id": "uri",
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "security": "nosec_sc",
+    "securityDefinitions": {
+        "nosec_sc": {
+            "scheme": "nosec"
+        }
+    },
+    "forms": [
+        {
+            "href": "",
+            "contentType": "application/json",
+            "op": [
+                "readallproperties",
+                "writeallproperties",
+                "readmultipleproperties",
+                "writemultipleproperties"
+            ]
+        }
+    ],
+    "description": "a simulation of a smart parking using distance sensors",
+    "properties": {
+        "slotsAvailable": {
+            "forms": [
+                {
+                    "href": "",
+                    "contentType": "application/json",
+                    "op": [
+                        "readproperty"
+                    ],
+                    "htv:methodName": "GET"
+                }
+            ],
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3,
+            "observable": false,
+            "readOnly": true,
+            "writeOnly": false,
+            "description": "total number of parking slots available"
+        },
+        "slot1": {
+            "forms": [
+                {
+                    "href": "",
+                    "contentType": "application/json",
+                    "op": [
+                        "readproperty",
+                        "writeproperty"
+                    ],
+                    "htv:methodName": "GET"
+                }
+            ],
+            "type": "object",
+            "properties": {
+                "available": {
+                    "type": "boolean"
+                },
+                "threshold": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+            "observable": false,
+            "readOnly": true,
+            "writeOnly": true,
+            "description": "first parking slot",
+            "sensor": {
+                "name": "HC-SR04",
+                "type": "ultrasonic"
+            }
+        }
+    },
+    "actions": {
+        "changeThresholdSlot1": {
+            "forms": [
+                {
+                    "href": "",
+                    "contentType": "application/json",
+                    "op": "invokeaction",
+                    "htv:methodName": "POST"
+                }
+            ],
+            "input": {
+                "threshold": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+            "safe": false,
+            "idempotent": false,
+            "description": "change threshold to slot1"
+        }
+    }
+}
