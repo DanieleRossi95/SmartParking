@@ -54,8 +54,8 @@ int carInterval = 2500;
 int sensorInterval = 3000;
 // soglia corrispondente alla differenza di distanza misurata tra due intervalli di tempo, 
 // se viene superata significa che un auto sta entrando o sta lasciando un parcheggio 
-int distanceThreshold = 30;
-int i;
+int distanceThreshold = 20;
+int i,n = 0;
 
 String ao = "A";
 String slot[slotNumber] = {"Slot1:", "Slot2:", "Slot3:"};
@@ -249,17 +249,19 @@ void loop() {
         slotsLeft--;
         
         // notify NodeMCU
+        n = 0;
         done = false;
-        while(!done) {
+        while(!done && n<30) {
           ArduinoUNO.print(i);
           ArduinoUNO.print('O');
           ArduinoUNO.print('d');
-          delay(1000);
+          delay(500);
           while(ArduinoUNO.available() > 0) { 
             char c = ArduinoUNO.read();
             if(c == 'k')
               done = true;
           }
+          n++;
         }
       }
     }
@@ -273,17 +275,19 @@ void loop() {
         slotsLeft ++;
         
         // notify NodeMCU
+        n = 0;
         done = false;
-        while(!done) {
+        while(!done && n<30) {
           ArduinoUNO.print(i);
           ArduinoUNO.print('A');
           ArduinoUNO.print('d');
-          delay(1000);
+          delay(500);
           while(ArduinoUNO.available() > 0) { 
             char c = ArduinoUNO.read();
             if(c == 'k')
               done = true;
           }
+          n++;
         }
       }
     }
