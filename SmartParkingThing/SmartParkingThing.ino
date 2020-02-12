@@ -72,8 +72,10 @@ SoftwareSerial NodeMCU(RX_PIN, TX_PIN);
 
 String stream = "";
 bool done = false;
+bool modify = false;
 
 int i, j, k;
+int num = 0;
 
 void setup() {
     Serial.begin(115200);
@@ -126,7 +128,7 @@ void setup() {
   
     connection(ssid, password);
     
-    td = "{\"title\":\"smartparking\",\"id\":\"uri\",\"@context\":\"https://www.w3.org/2019/wot/td/v1\",\"security\":\"nosec_sc\",\"securityDefinitions\":{\"nosec_sc\":{\"scheme\":\"nosec\"}},\"forms\":[{\"href\":\""+urlServer+"/all/properties\",\"contentType\":\"application/json\",\"op\":[\"readallproperties\",\"writeallproperties\",\"readmultipleproperties\",\"writemultipleproperties\"]}],\"description\":\"a simulation of a smart parking using distance sensors\",\"properties\":{\"slotsAvailable\":{\"forms\":[{\"href\":\""+urlServer+"/properties/"+property1_name+"\",\"contentType\":\"application/json\",\"op\":[\"readproperty\"],\"htv:methodName\":\"GET\"}],\"type\":\"integer\",\"minimum\":0,\"maximum\":3,\"observable\":false,\"readOnly\":true,\"writeOnly\":false,\"description\":\"total number of parking slots available\"},\"slot1\":{\"forms\":[{\"href\":\""+urlServer+"/properties/"+property2_name+"\",\"contentType\":\"application/json\",\"op\":[\"readproperty\",\"writeproperty\"],\"htv:methodName\":\"GET\"}],\"type\":\"object\",\"properties\":{\"available\":{\"type\":\"boolean\"},\"threshold\":{\"type\":\"integer\",\"minimum\":2,\"maximum\":200}},\"observable\":false,\"readOnly\":true,\"writeOnly\":true,\"description\":\"first parking slot\",\"sensor\":{\"name\":\"HC-SR04\",\"type\":\"ultrasonic\"}},\"slot2\":{\"forms\":[{\"href\":\""+urlServer+"/properties/"+property3_name+"\",\"contentType\":\"application/json\",\"op\":[\"readproperty\",\"writeproperty\"],\"htv:methodName\":\"GET\"}],\"type\":\"object\",\"properties\":{\"available\":{\"type\":\"boolean\"},\"threshold\":{\"type\":\"integer\",\"minimum\":4,\"maximum\":50}},\"observable\":false,\"readOnly\":true,\"writeOnly\":true,\"description\":\"second parking slot\",\"sensor\":{\"name\":\"Adafruit VL53L0X\",\"type\":\"laser\"}},\"slot3\":{\"forms\":[{\"href\":\""+urlServer+"/properties/"+property4_name+"\",\"contentType\":\"application/json\",\"op\":[\"readproperty\",\"writeproperty\"],\"htv:methodName\":\"GET\"}],\"type\":\"object\",\"properties\":{\"available\":{\"type\":\"boolean\"},\"threshold\":{\"type\":\"integer\",\"minimum\":4,\"maximum\":30}},\"observable\":false,\"readOnly\":true,\"writeOnly\":true,\"description\":\"third parking slot\",\"sensor\":{\"name\":\"Sharp IR\",\"type\":\"laser\"}}},\"actions\":{\"changeThresholdSlot1\":{\"forms\":[{\"href\":\""+urlServer+"/actions/"+action1_name+"\",\"contentType\":\"application/json\",\"op\":\"invokeaction\",\"htv:methodName\":\"POST\"}],\"input\":{\"threshold\":{\"type\":\"integer\",\"minimum\":2,\"maximum\":200}},\"safe\":true,\"idempotent\":true,\"description\":\"change threshold to slot1\"},\"changeThresholdSlot2\":{\"forms\":[{\"href\":\""+urlServer+"/actions/"+action2_name+"\",\"contentType\":\"application/json\",\"op\":\"invokeaction\",\"htv:methodName\":\"POST\"}],\"input\":{\"threshold\":{\"type\":\"integer\",\"minimum\":4,\"maximum\":50}},\"safe\":true,\"idempotent\":true,\"description\":\"change threshold to slot2\"},\"changeThresholdSlot3\":{\"forms\":[{\"href\":\""+urlServer+"/actions/"+action3_name+"\",\"contentType\":\"application/json\",\"op\":\"invokeaction\",\"htv:methodName\":\"POST\"}],\"input\":{\"threshold\":{\"type\":\"integer\",\"minimum\":4,\"maximum\":30}},\"safe\":true,\"idempotent\":true,\"description\":\"change threshold to slot3\"}}}";
+    td = "{\"title\":\"smartparking\",\"id\":\"uri\",\"@context\":\"https://www.w3.org/2019/wot/td/v1\",\"security\":\"nosec_sc\",\"securityDefinitions\":{\"nosec_sc\":{\"scheme\":\"nosec\"}},\"forms\":[{\"href\":\""+urlServer+"/all/properties\",\"contentType\":\"application/json\",\"op\":[\"readallproperties\",\"writeallproperties\",\"readmultipleproperties\",\"writemultipleproperties\"]}],\"description\":\"a simulation of a smart parking using distance sensors\",\"properties\":{\"slotsAvailable\":{\"forms\":[{\"href\":\""+urlServer+"/properties/"+property1_name+"\",\"contentType\":\"application/json\",\"op\":[\"readproperty\"],\"htv:methodName\":\"GET\"}],\"type\":\"integer\",\"minimum\":0,\"maximum\":3,\"observable\":false,\"readOnly\":true,\"writeOnly\":false,\"description\":\"total number of parking slots available\"},\"slot1\":{\"forms\":[{\"href\":\""+urlServer+"/properties/"+property2_name+"\",\"contentType\":\"application/json\",\"op\":[\"readproperty\",\"writeproperty\"],\"htv:methodName\":\"GET\"}],\"type\":\"object\",\"properties\":{\"available\":{\"type\":\"boolean\"},\"threshold\":{\"type\":\"integer\",\"minimum\":2,\"maximum\":200}},\"observable\":false,\"readOnly\":true,\"writeOnly\":true,\"description\":\"first parking slot\",\"sensor\":{\"name\":\"HC-SR04\",\"type\":\"ultrasonic\"}},\"slot2\":{\"forms\":[{\"href\":\""+urlServer+"/properties/"+property3_name+"\",\"contentType\":\"application/json\",\"op\":[\"readproperty\",\"writeproperty\"],\"htv:methodName\":\"GET\"}],\"type\":\"object\",\"properties\":{\"available\":{\"type\":\"boolean\"},\"threshold\":{\"type\":\"integer\",\"minimum\":4,\"maximum\":50}},\"observable\":false,\"readOnly\":true,\"writeOnly\":true,\"description\":\"second parking slot\",\"sensor\":{\"name\":\"Adafruit VL53L0X\",\"type\":\"infrared\"}},\"slot3\":{\"forms\":[{\"href\":\""+urlServer+"/properties/"+property4_name+"\",\"contentType\":\"application/json\",\"op\":[\"readproperty\",\"writeproperty\"],\"htv:methodName\":\"GET\"}],\"type\":\"object\",\"properties\":{\"available\":{\"type\":\"boolean\"},\"threshold\":{\"type\":\"integer\",\"minimum\":4,\"maximum\":30}},\"observable\":false,\"readOnly\":true,\"writeOnly\":true,\"description\":\"third parking slot\",\"sensor\":{\"name\":\"Sharp IR\",\"type\":\"infrared\"}}},\"actions\":{\"changeThresholdSlot1\":{\"forms\":[{\"href\":\""+urlServer+"/actions/"+action1_name+"\",\"contentType\":\"application/json\",\"op\":\"invokeaction\",\"htv:methodName\":\"POST\"}],\"input\":{\"threshold\":{\"type\":\"integer\",\"minimum\":2,\"maximum\":200}},\"safe\":true,\"idempotent\":true,\"description\":\"change threshold to slot1\"},\"changeThresholdSlot2\":{\"forms\":[{\"href\":\""+urlServer+"/actions/"+action2_name+"\",\"contentType\":\"application/json\",\"op\":\"invokeaction\",\"htv:methodName\":\"POST\"}],\"input\":{\"threshold\":{\"type\":\"integer\",\"minimum\":4,\"maximum\":50}},\"safe\":true,\"idempotent\":true,\"description\":\"change threshold to slot2\"},\"changeThresholdSlot3\":{\"forms\":[{\"href\":\""+urlServer+"/actions/"+action3_name+"\",\"contentType\":\"application/json\",\"op\":\"invokeaction\",\"htv:methodName\":\"POST\"}],\"input\":{\"threshold\":{\"type\":\"integer\",\"minimum\":4,\"maximum\":30}},\"safe\":true,\"idempotent\":true,\"description\":\"change threshold to slot3\"}}}";
 
     done = false;
     int count = 0;
@@ -221,6 +223,7 @@ void loop() {
                         }
                         done = true;
                         NodeMCU.print('k');
+                        Serial.print("0: ");
                         Serial.println(stream);
                         stream = "";    
                     }     
@@ -245,6 +248,7 @@ void loop() {
                         }
                         done = true;
                         NodeMCU.print('k');
+                        Serial.print("1: ");
                         Serial.println(stream);
                         stream = "";    
                     }     
@@ -269,6 +273,7 @@ void loop() {
                         }
                         done = true;
                         NodeMCU.print('k');
+                        Serial.print("2: ");
                         Serial.println(stream);
                         stream = "";    
                     }     
@@ -492,6 +497,7 @@ String request8(String body) {
     }
     return resp;
 }
+
 String request9(String body) {
     DynamicJsonDocument resp_doc(200);
     String resp = "";
@@ -543,6 +549,7 @@ String request9(String body) {
     }
     return resp;
 }
+
 String request10(String body) {
     DynamicJsonDocument resp_doc(200);
     String resp = "";
@@ -648,7 +655,7 @@ void changeThresholdSlot1(int threshold) {
         NodeMCU.print('0');
         NodeMCU.print(threshold);
         NodeMCU.print('d');
-        delay(2000);
+        delay(1000);
         while(NodeMCU.available() > 0) {
             char c = NodeMCU.read();
             if(c == 'k') 
@@ -656,7 +663,6 @@ void changeThresholdSlot1(int threshold) {
         }
         n++;
     }
- 
 }
 
 void changeThresholdSlot2(int threshold) {
@@ -669,7 +675,7 @@ void changeThresholdSlot2(int threshold) {
         NodeMCU.print('1');
         NodeMCU.print(threshold);
         NodeMCU.print('d');
-        delay(2000);
+        delay(1000);
         while(NodeMCU.available() > 0) {
             char c = NodeMCU.read();
             if(c == 'k')
@@ -689,7 +695,7 @@ void changeThresholdSlot3(int threshold) {
         NodeMCU.print('2');
         NodeMCU.print(threshold);
         NodeMCU.print('d');
-        delay(2000);
+        delay(1000);
         while(NodeMCU.available() > 0) {
             char c = NodeMCU.read();
             if(c == 'k')
